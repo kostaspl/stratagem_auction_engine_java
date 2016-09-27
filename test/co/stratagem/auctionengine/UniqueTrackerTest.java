@@ -17,7 +17,6 @@ public class UniqueTrackerTest {
 	@Test
 	public void testCreateUser() {
 		UniqueTracker tracker = UniqueTracker.getInstance();
-		assertNull(tracker.createUser(null));
 		assertNotNull(tracker.createUser("testCreateUser"));
 		assertNull(tracker.createUser("testCreateUser"));
 	}
@@ -25,7 +24,6 @@ public class UniqueTrackerTest {
 	@Test
 	public void testCreateAuction() {
 		UniqueTracker tracker = UniqueTracker.getInstance();
-		assertNull(tracker.createAuction(null));
 		assertNotNull(tracker.createAuction("testCreateAuction"));
 		assertNull(tracker.createAuction("testCreateAuction"));
 	}

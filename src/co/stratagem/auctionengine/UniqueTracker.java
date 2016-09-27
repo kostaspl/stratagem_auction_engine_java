@@ -1,7 +1,9 @@
 package co.stratagem.auctionengine;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import co.stratagem.auctionengine.interfaces.ITracker;
 
 /*
@@ -11,12 +13,12 @@ public class UniqueTracker implements ITracker {
 
 	private static UniqueTracker sInstance;
 
-	private List<AuctionItem> mAuctions;
-	private List<User> mUsers;
+	private Map<String, AuctionItem> mAuctions;
+	private Map<String, User> mUsers;
 
 	private UniqueTracker() {
-		mAuctions = new LinkedList<AuctionItem>();
-		mUsers = new LinkedList<User>();
+		mAuctions = new HashMap<String, AuctionItem>();
+		mUsers = new HashMap<String, User>();
 	}
 
 	public static UniqueTracker getInstance() {
@@ -28,42 +30,28 @@ public class UniqueTracker implements ITracker {
 
 	@Override
 	public User createUser(String userName) {
-		if (userName == null){
+		if (userName != null && mUsers.containsKey(userName)){
 			return null;
 		}
-		for (User user : mUsers){
-			if (user.getName().equals(userName)){
-				return null;
-			}
-		}
 		User user = new User(userName);
-		mUsers.add(user);
+		mUsers.put(userName, user);
 		return user;
 	}
 
 	@Override
 	public AuctionItem createAuction(String itemName) {
-		if (itemName == null){
+		if (itemName != null && mAuctions.containsKey(itemName)){
 			return null;
 		}
-		for (AuctionItem item : mAuctions){
-			if (item.getName().equals(itemName)){
-				return null;
-			}
-		}
 		AuctionItem auction = new AuctionItem(itemName);
-		mAuctions.add(auction);
+		mAuctions.put(itemName, auction);
 		return auction;
 	}
 
 	@Override
 	public User findUser(String userName) {
 		if (userName != null) {
-			for (User user : mUsers){
-				if (user.getName().equals(userName)){
-					return user;
-				}
-			}
+			return mUsers.get(userName);
 		}
 		return null;
 	}
@@ -71,22 +59,18 @@ public class UniqueTracker implements ITracker {
 	@Override
 	public AuctionItem findAuction(String itemName) {
 		if (itemName != null) {
-			for (AuctionItem item : mAuctions){
-				if (item.getName().equals(itemName)){
-					return item;
-				}
-			}
+			return mAuctions.get(itemName);
 		}
 		return null;
 	}
 
 	@Override
-	public List<User> getUsers() {
-		return mUsers;
+	public Collection<User> getUsers() {
+		return mUsers.values();
 	}
 
 	@Override
-	public List<AuctionItem> getAuctions() {
-		return mAuctions;
+	public Collection<AuctionItem> getAuctions() {
+		return mAuctions.values();
 	}
 }

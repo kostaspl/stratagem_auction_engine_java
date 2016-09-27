@@ -1,5 +1,6 @@
 package co.stratagem.auctionengine;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -17,9 +18,14 @@ public class Example {
 		return randInt(min, max - 1) + sRand.nextFloat();
 	}
 
+	private static Object getRandomObject(Collection c) {
+		int i = sRand.nextInt(c.size());
+		return c.toArray()[i];
+	}
+
 	public static void main(String[] args) {
 		ITracker tracker = UniqueTracker.getInstance();
-		
+
 		System.out.println("Creating some auctions...");
 		tracker.createAuction("iPhone");
 		tracker.createAuction("PlayStation");
@@ -28,77 +34,84 @@ public class Example {
 		tracker.createAuction("Note7");
 		tracker.createAuction("iPad");
 		tracker.createAuction("ZenBook");
-		
-		for (AuctionItem item : tracker.getAuctions()){
+
+		for (AuctionItem item : tracker.getAuctions()) {
 			System.out.println(item);
 		}
-		
+
 		System.out.println("\nCreating some users...");
 		tracker.createUser("Kostas");
 		tracker.createUser("John");
 		tracker.createUser("George");
 		tracker.createUser("Nick");
-		
-		for (User user : tracker.getUsers()){
+
+		for (User user : tracker.getUsers()) {
 			System.out.println(user);
 		}
-		
-		List<User> users = tracker.getUsers();
-		List<AuctionItem> items = tracker.getAuctions();
-		int numberOfUsers = users.size();
-		int numberOfItems = items.size();
-		
+
+		Collection<User> users = tracker.getUsers();
+		Collection<AuctionItem> items = tracker.getAuctions();
+
 		// test 20 random bids
 		System.out.println("\nPlacing some random bids...");
-		for (int i = 0; i < 20; i++){
+		for (int i = 0; i < 20; i++) {
 			// pick a random price from 1 to 100
 			float price = randFloat(1, 100);
 			// pick a random user
-			User user = tracker.getUsers().get(randInt(0, numberOfUsers - 1));
+			User user = (User) getRandomObject(users);
 			// pick a random item
-			AuctionItem item = tracker.getAuctions().get(randInt(0, numberOfItems - 1));
-			
+			AuctionItem item = (AuctionItem) getRandomObject(items);
+
 			Bid winningBid = item.getWinningBid();
-			
-			if (user.hasBidOn(item) && winningBid.getBidder().equals(user)){
-				System.out.println(user.getName() + " skipped bidding because he is already the highest bidder for " + item.getName());
+
+			if (user.hasBidOn(item) && winningBid.getBidder().equals(user)) {
+				System.out
+						.println(user.getName()
+								+ " skipped bidding because he is already the highest bidder for "
+								+ item.getName());
 				continue;
 			}
-			if (user.bidOn(item, price)){
-				System.out.println(user.getName() + " successfully bid on " + item.getName() + " for " + price);
+			if (user.bidOn(item, price)) {
+				System.out.println(user.getName() + " successfully bid on "
+						+ item.getName() + " for " + price);
 			} else {
-				System.out.println(user.getName() + " failed to bid on " + item.getName() + " for " + price + ". Current winning bid price is " + winningBid.getPrice());
+				System.out.println(user.getName() + " failed to bid on "
+						+ item.getName() + " for " + price
+						+ ". Current winning bid price is "
+						+ winningBid.getPrice());
 			}
 		}
-		
+
 		System.out.println("\nPrinting winning bids for every item...");
 		Bid winningBid = null;
-		for (AuctionItem item : items){
+		for (AuctionItem item : items) {
 			winningBid = item.getWinningBid();
-			if (winningBid == null){
+			if (winningBid == null) {
 				System.out.println("No one bid on " + item.getName());
 			} else {
-				System.out.println(winningBid.getBidder().getName() + " offered " + winningBid.getPrice() + " for " + item.getName());
+				System.out.println(winningBid.getBidder().getName()
+						+ " offered " + winningBid.getPrice() + " for "
+						+ item.getName());
 			}
 		}
-		
+
 		System.out.println("\nPrinting all bids for every item...");
-		for (AuctionItem item : items){
-			if (item.hasBids()){
+		for (AuctionItem item : items) {
+			if (item.hasBids()) {
 				System.out.println("Bids for " + item.getName() + ":");
-				for (Bid bid : item.getBids()){
+				for (Bid bid : item.getBids()) {
 					System.out.println("\t" + bid);
 				}
 			} else {
 				System.out.println("No bids placed for " + item.getName());
 			}
 		}
-		
+
 		System.out.println("\nPrinting all items each user has bid on...");
-		for (User user : users){
-			if (user.hasBid()){
+		for (User user : users) {
+			if (user.hasBid()) {
 				System.out.println(user.getName() + " has bid on:");
-				for (AuctionItem item : user.getItemsBidOn()){
+				for (AuctionItem item : user.getItemsBidOn()) {
 					System.out.println("\t" + item);
 				}
 			} else {
